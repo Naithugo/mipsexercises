@@ -10,7 +10,7 @@ word2:
 .global start
 .ent start
 start:
-	subu sp,sp,24 //
+	subu sp,sp,24 //// allokerar 24 ord till subrutin ?? 
 	sw ra,20(sp) //
 	
 	la a0,word //lägger till adressen till word i a0
