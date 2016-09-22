@@ -34,16 +34,7 @@ skriv:
 	b L1
 	nop
 
-	/*
-	L1:
-	bge t0,10,L2
-	la a0, newLine  //lägger till adressen till newLine i a0
-	jal printf		
-	nop
-	addi t0,t0,1;
-	b L1
-	nop
-	*/
+
 	L2:
 	lw ra,20(sp) // laddar in returadressen
 	addiu sp,sp,24 //flyttar tillbaka stackpekaren
@@ -64,9 +55,13 @@ quicksort:
 	
 	
 	LS1:
-	bge s0,zero,L2      // Om t2<t1 go to L2
+	bge s0,zero,LS2      // Om t2<t1 go to LS2
+	jal partition
 	nop
 	
+	
+	b LS1
+	nop
 	
 	
 	
@@ -83,8 +78,34 @@ partition:
 	subu sp,sp,24
 	sw ra,20(sp)
 	
+	/// t0(adress till array), pivot t3, a--->s0, v[lower] s1 (nästa värde [a+1] från pivot), upper(k) s2 (antal-1)
+	// s0=antal-1 (skriven i quicksort)
+	
+	la t0,array //t0 blir adress till array[0]
+	
+	la t1,array //pivot ska bli t1, behöver första adressen senare
+
+	//s0*4	
+	li t2,0 
+	sll t2,t2,2
+	addu t1,t2
+	lw t3,0(t1)
+	lw s1,4(t1) //s1 = v[lower]
+	addu t1,4 //lower
 	
 	
+	LP1:
+//	bge  
+//	bge
+
+	b LP1
+	nop
+	
+	
+	LP2:
+
+
+	LP3:	
 	lw ra, 20(sp)
 	addiu sp,sp,24
 	.end partition
@@ -99,8 +120,15 @@ start:
 	subu sp,sp,24
 	sw ra,20(sp)
 	
+	
 	jal skriv		//kör subrutinen skriv
 	nop
+	jal quicksort
+	nop
+	lw s2,antal
+	subu s2, 1
+	li s0,0
+	
 	
 	
 	lw ra,20(sp) //laddar in returadressen
