@@ -49,16 +49,23 @@ skriv:
 quicksort:
 	subu sp, sp, 24
 	sw ra,20(sp)
-	
+	move s6,s0
+	move s7,s2
 	LS1:
-	bge s2,s0,LS2      // Om t2<t1 go to LS2
+	bge s7,s6,LS2      // Om a<b go to LS2
 	jal partition
 	nop
 	
-	jal quicksort
-	nop
+
+	addi s2,s2,1
 	
 	jal quicksort
+	nop
+	move s0, s2
+	move s2,s7
+	addi s2,s2,1
+	jal quicksort
+	nop
 	
 	
 	b LS1
@@ -149,7 +156,10 @@ partition:
 	lw ra, 20(sp)
 	nop
 	addiu sp,sp,24
+	jr ra
+	nop
 	.end partition
+	
 
 
 
