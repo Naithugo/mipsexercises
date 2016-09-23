@@ -103,9 +103,9 @@ partition:
 	addu t1,t1,t6 // få adress till 
 	lw t3,0(t1) //v[a] hamnar i t3 (pivot)
 	nop
-	lw s1,4(t1) //s1 = v[lower]
+	lw t4,4(t1) //t4 = v[lower]
 	nop
-	addu t9, s0,1   //lower=t9
+	addu t9, s0,1   //lower=t9  (t9 = a+1)
 
 	
 	
@@ -113,10 +113,10 @@ partition:
 	mult s2,t7
 	mflo t7
 	addu t7,t0,t7
-	lw t7,0(t7) 		//fixar v[upper]
+	lw t7,0(t7) 		//fixar v[upper]				//Upper är s2 (b)
 	
 	LP1:
-	bgt s1,t3, LP2  // om v[lower]>pivot, hoppa till LP2
+	bgt t4,t3, LP2  // om v[lower]>pivot, hoppa till LP2
 	bgt t9,s2, LP2 // om lower > upper, hoppa till LP2
 	addi t9,t9,1
 	b LP1
@@ -134,25 +134,26 @@ partition:
 
 
 	LP3:
-	bgt t9,s2,LP4
-	move t8,s1      //t8 är "temp"
-	move s1,t7
-	move t7,t8
-	addi t9,t9,1
-	addi s2,s2,-1
+	bgt t9,s2,LPX
+	sw t8,0(s1)      //temp = v[lower]
+	sw s1,0(t7)		// v[lower] = v[upper]
+	sw t7,0(t8)		// v[upper] = temp
+	addi t9,t9,1	// lower = lower +1
+	addi s2,s2,-1	// upper = upper -1
 	b LP3
 	
 	LP4:
-	ble t9,s2,LP1
-	b LPX
+	ble t9,s2,LPX
+
+	
+	
+	b LP1
 	nop
 	
 	LPX:
-	move t8,t7
-	move t7,t3
-	move t3,t8
-	
-	//return s2 (k)	
+	sw t8,0(t7)
+	sw t7,0(t3)
+	sw t3,0(t8)	
 	lw ra, 20(sp)
 	nop
 	addiu sp,sp,24
@@ -174,7 +175,7 @@ start:
 	nop
 	addiu s2,s2,-1
 	li s0,0  // a
-	
+	la s1,array
 	
 	jal skriv		//kör subrutinen skriv
 	nop
