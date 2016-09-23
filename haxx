@@ -1,0 +1,226 @@
+#include <iregdef.h>
+
+
+.data
+newLine: .asciiz "new line\n"
+arrayPrint: .asciiz "%d "
+array: .word 4,5,2,2,1,6,7,9,5,10
+antal: .word 10
+
+
+
+.text
+.set noreorder
+.globl skriv			
+.ent skriv
+
+skriv:
+	subu sp,sp,24
+	nop			//flyttar stackpekaren
+	sw ra,20(sp)       //sparar returadresssen
+
+	move t3, zero
+	la a0,arrayPrint
+	la s1,array
+	
+	L1:
+	bge t3,10,L2	
+	sll t2,t3,2 //håller koll på att t2=4*i(i=s0)
+	add t2,s1,t2
+	lw t2,0(t2) //skriver över adressen med värdet på den platsen
+	nop
+	move a1,t2
+	jal printf
+	nop
+	addi t3,t3,1
+	b L1
+	nop
+
+
+	L2:
+	lw ra,20(sp) // laddar in returadressen
+	nop
+	addiu sp,sp,24 //flyttar tillbaka stackpekaren
+	jr ra
+	nop
+	.end skriv
+	
+.globl quicksort
+.ent quicksort
+
+quicksort:
+	subu sp, sp, 40
+	nop
+	sw ra,36(sp)		//sparar på stacken och flyttar pekaren
+	sw s0,32(sp)
+	sw s1,28(sp)
+	sw s2,24(sp)
+	sw s3,20(sp)
+	
+	LS1:
+	bge s0,s2,LS2      // Om a<b go to LS2
+	jal partition
+	nop
+	move s3,v0			//spara returvärde
+	
+	
+	jal quicksort
+	nop
+	move a0, s0
+	move a1,s1
+	move a2,s3
+	addi a2,a2,-1
+	nop
+	
+	jal quicksort
+	nop
+	
+	move a0,s0
+	move a1,s3
+	addi a1,a1,1
+	nop
+	move a2,s2
+	
+	b LS1
+	nop
+	
+	
+	
+	LS2:
+	lw ra,36(sp)		//laddar tillbaka värden från stacken och flyttar tillbaka pekaren
+	lw s0,32(sp)
+	lw s1,28(sp)
+	lw s2,24(sp)
+	lw s3,20(sp)
+	nop
+	addiu sp,sp,40
+	nop
+	jr ra
+	nop
+	.end quicksort
+
+
+.globl partition
+.ent partition
+
+partition:
+	
+
+	partition:
+	sll t0, a1, 2
+	nop
+	addu t0, t0, a0
+	lw t0, (t0) # t0 = pivot
+	nop
+	
+	addiu t1, a1, 1 # t1 = a + 1
+	nop
+	move t2, a2 # t2 = b
+	
+partition_do:
+	# while (v[lower] <= pivot && lower <= upper)
+	sll t3, t1, 2
+	nop
+	addu t3, a0, t3
+	lw t3, (t3) # t3 = v[lower]
+	nop
+	sle t8, t3, t0
+	sle t9, t1, t2
+	nop
+	bne t8, t9, partition_decloop
+	nop
+	addiu t1, t1, 1
+	nop
+	b partition_do
+	nop
+partition_decloop:
+	# while (v[upper] > pivot && lower <= upper		
+	sll t3, t2, 2
+	nop
+	addu t3, a0, t3
+	lw t3, (t3) # t3 = v[upper]
+	nop
+	sgt t8, t3, t0
+	sle t9, t1, t2
+	nop
+	bne t8, t9, partition_decloop_end
+	nop
+	addiu t2, t2, -1
+	nop
+	b partition_decloop
+	nop
+partition_decloop_end:
+	bgt t1, t2, partition_if_skip
+	nop
+	sll t3, t1, 2
+	nop
+	addu t3, a0, t3 # t3 is address of v[lower]
+	lw t5, (t3) 	# t5 = v[lower]
+	nop
+	sll t4, t2, 2
+	nop
+	addu t4, a0, t4 # t4 is address of v[upper]
+	lw t6, (t4) 	# t6 = v[upper]
+	nop
+	sw t6, (t3)
+	sw t5, (t4)
+	addiu t1, t1, 1
+	addiu t2, t2, -1
+	nop
+partition_if_skip:
+	ble t1, t2, partition_do
+	nop
+	sll t3, t2, 2
+	nop
+	addu t3, a0, t3 # t3 is address of v[upper]
+	lw t5, (t3) 	# t5 = v[upper]
+	sll t4, a1, 2
+	addu t4, a0, t4 # t4 is address of v[a]
+	lw t6, (t4) 	# t6 = v[a]
+	nop
+	sw t6, (t3) 	# v[upper] = v[a]
+	sw t5, (t4) 	# v[a] = temp
+	nop
+	move v0, t2
+	jr ra
+	nop
+.end partition
+	
+
+
+
+.globl start
+.ent start
+
+start:
+
+	subu sp,sp,24
+	sw ra,20(sp)
+	la a0,array
+	lw a2,antal //upper (kallas b här)
+	nop
+	addiu a2,a2,-1
+	li a1,0  // a
+
+	
+	jal skriv		//kör subrutinen skriv
+	nop
+	la a0, array
+	nop
+	jal quicksort
+	nop
+	la a0,array
+	nop
+	jal skriv
+	nop
+	
+	
+	
+	
+	lw ra,20(sp) //laddar in returadressen
+	nop
+	addiu sp,sp,24 //flyttar stackpekaren
+	nop
+	jr ra
+	nop
+	.end start
