@@ -48,10 +48,10 @@ skriv:
 .ent quicksort
 
 quicksort:
-	subu sp, sp, 64
-	sw ra,56(sp)
+	subu sp, sp, 24
+	sw ra,20(sp)
 	LS1:
-	bge s2,s0,LS2      // Om a<b go to LS2
+	bge s0,s2,LS2      // Om a<b go to LS2
 	nop
 	jal partition
 	nop
@@ -75,9 +75,9 @@ quicksort:
 	
 	
 	LS2:
-	lw ra, 56(sp)
+	lw ra, 20(sp)
 	nop
-	addiu sp,sp,64
+	addiu sp,sp,24
 	nop
 	jr ra
 	nop
