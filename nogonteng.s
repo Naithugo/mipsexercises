@@ -23,6 +23,7 @@ skriv:
 //	la t1,array //töms temp reg vid jal printf??? 
 	L1:
 	bge t3,10,L2	
+	nop
 	sll t2,t3,2 //håller koll på att t2=4*i(i=s0)
 	add t2,s1,t2
 	lw t2,0(t2) //skriver över adressen med värdet på den platsen
@@ -51,21 +52,23 @@ quicksort:
 	subu sp, sp, 24
 	sw ra,20(sp)
 	LS1:
-	bge s0,s2,LS2      // Om a<b go to LS2
+	bge s0,s2,LS2      // Om a<b go to LS2    
+	nop
+	move s5,s2
 	nop
 	jal partition
 	nop
+	move s7, s2// k
+	addi s2,s7,-1
+	nop
 	
-	move s4,s2   //lagrar returvärdet i s4
-	nop
-	addi s2,s4,-1
-	nop
 	jal quicksort
 	nop
-	
-	li s2,9
+	addi s0,s7,1
+	move s2,s5
 	nop
-	addi s0,s4,1
+	
+		
 	nop
 	jal quicksort
 	nop
@@ -102,9 +105,13 @@ partition:
 	
 	
 	li t6,4
+	nop
 	mult s0,t6 // multiplicerar [a] med 4 för att få rätt plats i arrayen
+	nop
 	mflo t6 
+	nop
 	addu t1,t1,t6 // få adress till 
+	nop
 	lw t3,0(t1) //v[a] hamnar i t3 (pivot)
 	nop
 	lw t4,4(t1) //t4 = v[lower]
@@ -114,10 +121,15 @@ partition:
 	
 	
 	li t7,4
+	nop
 	mult s2,t7
+	nop
 	mflo s4
+	nop
 	addu s4,t0,s4
+	nop
 	lw t7,0(s4) 		//fixar v[upper]				//Upper är s2 (b)
+	nop
 	
 	LP1:
 	bgt t4,t3, LP2  // om v[lower]>pivot, hoppa till LP2
@@ -151,7 +163,7 @@ partition:
 
 	LP3:
 	bgt t9,s4,LPX
-	
+	nop
 	
 	move t8,t4      //temp = v[lower]
 	nop
@@ -164,10 +176,14 @@ partition:
 	move t7,t8		// v[upper] = temp
 	nop
 	sw t7,0(s4)
+	nop
 	
 	addi t9,t9,4	// lower = lower +1
+	nop
 	addi s4,s4,-4	// upper = upper -1
+	nop
 	addi s2,s2,-1
+	nop
 	lw t7,0(s4)
 	nop
 	lw t4,0(t9)
@@ -176,7 +192,7 @@ partition:
 	
 	LP4:
 	ble t9,s4,LP1
-
+	nop
 	
 	
 	b LPX
@@ -217,13 +233,14 @@ start:
 	sw ra,20(sp)
 	nop
 	la s1,array
+	nop
 	lw s2,antal //upper (kallas b här)
 	nop
 	addiu s2, s2,-1
 //	addiu s2,s1,36
 	nop 
 	li s0,0  // a
-	
+	nop
 	
 	jal skriv		//kör subrutinen skriv
 	nop
