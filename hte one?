@@ -4,7 +4,7 @@
 .data
 newLine: .asciiz "new line\n"
 arrayPrint: .asciiz "%d "
-array: .word 10,9,8,7,6,5,4,3,2,1
+array: .word 4,5,2,2,1,6,1,9,5,3
 antal: .word 10
 
 // 4,5,2,2,1,6,7,9,5,10
@@ -62,12 +62,20 @@ quicksort:
 	jal partition
 	nop
 	move s7, s2		// k
+	nop
 	addi s2,s7,-1
 	nop
 	
+	KOLL:
+    bge s0,s2,KOLL2   
+	NOP
 	jal quicksort
-	nop
 	move s7, s2		// k
+	nop
+	
+	
+	KOLL2:
+
 	addi s0,s7,1
 	nop
 	move s2,s5
