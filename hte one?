@@ -4,10 +4,10 @@
 .data
 newLine: .asciiz "new line\n"
 arrayPrint: .asciiz "%d "
-array: .word 4,5,2,2,1,7,6,9,5,10
+array: .word 10,9,8,7,6,5,4,3,2,1
 antal: .word 10
 
-
+// 4,5,2,2,1,6,7,9,5,10
 
 .text
 .set noreorder
@@ -103,17 +103,17 @@ partition:
 	
 	la t0,array //t0 blir adress till array[0]
 	
-	la t1,array //används för att få fram pivot
+	//la t1,array //används för att få fram pivot
 
 	
 	
 	li t6,4
 	nop
-	mult s0,t6 // multiplicerar [a] med 4 för att få rätt plats i arrayen
+	multu s0,t6 // multiplicerar [a] med 4 för att få rätt plats i arrayen
 	nop
 	mflo t6 
 	nop
-	addu t1,t1,t6 // få adress till 
+	addu t1,t0,t6 // få adress till v[a] 
 	nop
 	lw t3,0(t1) //v[a] hamnar i t3 (pivot)
 	nop
@@ -125,13 +125,14 @@ partition:
 	
 	li t7,4
 	nop
-	mult s2,t7
+	multu s2,t7
 	nop
 	mflo s4
 	nop
-	addu s4,t0,s4
+	addu s4,t0,s4        //upper: adress till v[upper]
 	nop
-	lw t7,0(s4) 		//fixar v[upper]				//Upper är s2 (b)
+	
+	lw t7,0(s4) 		//fixar v[upper]s värde				//Upper (0-9) är s2 (b)
 	nop
 	
 	LP1:
@@ -191,18 +192,14 @@ partition:
 	nop
 	lw t4,0(t9)
 	nop
-	//b LP3   //this shit right here
+	
 	
 	LP4:
 	ble t9,s4,LP1
 	nop
 	
 	
-	b LPX
-	nop
-	
-	LPX:
-	move t8,t7
+	move t8,t7				//t8 är temp
 	nop
 	
 	move t7,t3
