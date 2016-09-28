@@ -118,9 +118,9 @@ partition:
 	sw ra,20(sp)
 	
 	
-	la s1,array //t0 blir adress till array[0]
+
 	
-	//la t1,array //används för att få fram pivot
+	
 
 	move t2, a2
 		
@@ -149,7 +149,7 @@ partition:
 	addu s4,a1,s4        //upper: adress till v[upper]
 	nop
 	
-	lw t7,0(s4) 		//fixar v[upper]s värde				//Upper (0-9) är s2 (b)
+	lw t7,0(s4) 		//fixar v[upper]s värde				
 	nop
 	
 	LP1:
@@ -253,12 +253,6 @@ start:
 	nop
 	la a1,array
 	nop
-/*	lw a2,antal //upper (kallas b här)
-	nop
-	addiu a2, a2,-1
-	nop 
-	li a0,0  // a
-	nop*/
 	
 	jal skriv		//kör subrutinen skriv
 	nop
@@ -273,6 +267,7 @@ start:
 	jal quicksort
 	nop
 	la a1,array
+	nop
 	jal skriv
 	nop
 	
