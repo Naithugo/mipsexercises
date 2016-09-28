@@ -4,7 +4,7 @@
 .data
 newLine: .asciiz "\n"
 arrayPrint: .asciiz "%d \n"
-array: .word 4,5,-69,2,1,6,1,9,5,3
+array: .word 4,5,2,2,1,6,7,9,5,10
 antal: .word 10
 
 // 4,5,2,2,1,6,7,9,5,10
