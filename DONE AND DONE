@@ -1,0 +1,286 @@
+#include <iregdef.h>
+
+
+.data
+newLine: .asciiz "\n"
+arrayPrint: .asciiz "%d \n"
+array: .word 4,5,-69,2,1,6,1,9,5,3
+antal: .word 10
+
+// 4,5,2,2,1,6,7,9,5,10
+
+.text
+.set noreorder
+.globl skriv			
+.ent skriv
+
+skriv:
+	subu sp,sp,24			//flyttar stackpekaren
+	sw ra,20(sp)       //sparar returadresssen
+
+	move t3, zero
+	la a0,arrayPrint
+	lw t1,antal
+	move t4,a1
+	
+	L1:
+	bge t3,t1,L2	
+	nop
+	sll t2,t3,2 //håller koll på att t2=4*i(i=s0)
+	add t2,t4,t2
+	lw t2,0(t2) //skriver över adressen med värdet på den platsen
+	nop
+	move a1,t2
+	jal printf
+	nop
+	addi t3,t3,1
+	b L1
+	nop
+
+
+	L2:
+	
+	lw ra,20(sp) // laddar in returadressen
+	nop
+	addiu sp,sp,24 //flyttar tillbaka stackpekaren
+	nop
+	jr ra
+	nop
+	.end skriv
+	
+.globl quicksort
+.ent quicksort
+
+quicksort:
+	subu sp, sp, 40
+	sw ra,36(sp)
+	sw s0,32(sp)
+	sw s1,28(sp)
+	sw s2,24(sp)
+	sw s3,20(sp)
+	
+	
+	LS1:
+	bge a0,a2,LS2      // Om a>=b go to LS2    
+	move s0,a0   //a
+	move s1,a1   //array
+	move s2,a2   //b
+	
+	nop
+	jal partition
+	nop
+	move s3,v0		// sparar returvärdet k i s3
+	nop
+	
+	
+	move a0,s0		//ARGUMENT för Quicksort (v,a,k-1);
+	move a1,s1
+	move a2,s3
+	addi a2,a2,-1
+	nop
+	
+  
+	jal quicksort
+	nop
+	move a0,s3		//ARGUMENT för Quicksort (v,k+1,b);
+	addi a0,a0,1
+	move a1,s1
+	move a2,s2
+	nop
+	
+	jal quicksort
+	nop
+	
+	
+	
+	
+	
+	LS2:
+	lw ra, 36(sp)
+	lw s0,32(sp)
+	lw s1,28(sp)
+	lw s2,24(sp)
+	lw s3,20(sp)
+	nop
+	addiu sp,sp,40
+	nop
+	jr ra
+	nop
+	.end quicksort
+
+
+.globl partition
+.ent partition
+
+partition:
+	
+	subu sp,sp,24
+	sw ra,20(sp)
+	
+	
+	la s1,array //t0 blir adress till array[0]
+	
+	//la t1,array //används för att få fram pivot
+
+	move t2, a2
+		
+	li t6,4
+	nop
+	multu a0,t6 // multiplicerar [a] med 4 för att få rätt plats i arrayen
+	nop
+	mflo t6 
+	nop
+	addu t1,a1,t6 // få adress till v[a] 
+	nop
+	lw t3,0(t1) //v[a] hamnar i t3 (pivot)
+	nop
+	lw t4,4(t1) //t4 = v[lower]
+	nop
+	addu t9,t1,4   //lower=t9  (t9 = a+1)
+	nop
+	
+	
+	li t7,4
+	nop
+	multu t2,t7
+	nop
+	mflo s4
+	nop
+	addu s4,a1,s4        //upper: adress till v[upper]
+	nop
+	
+	lw t7,0(s4) 		//fixar v[upper]s värde				//Upper (0-9) är s2 (b)
+	nop
+	
+	LP1:
+	bgt t4,t3, LP2  // om v[lower]>pivot, hoppa till LP2
+	nop
+	bgt t9,s4, LP2 // om lower > upper, hoppa till LP2
+	nop
+	addi t9,t9,4
+	nop
+	lw t4,0(t9)
+	nop
+	b LP1
+	nop
+	
+	
+	LP2:
+	ble t7,t3,LP3			//om v[upper] =< pivot hoppa till LP3
+	nop
+	bgt t9,s4,LP3			//om lower > upper hoppa till LP3
+	nop
+	addi s4,s4,-4
+	nop
+	addi t2,t2,-1
+	nop
+	lw t7,0(s4)
+	nop
+	
+	b LP2
+	nop
+	
+
+
+	LP3:
+	bgt t9,s4,LP4
+	nop
+	
+	move t8,t4      //temp = v[lower]
+	nop
+	
+	move t4,t7		// v[lower] = v[upper]
+	nop
+	sw t4, 0(t9)
+	nop
+	
+	move t7,t8		// v[upper] = temp
+	nop
+	sw t7,0(s4)
+	nop
+	
+	addi t9,t9,4	// lower = lower +1
+	nop
+	addi s4,s4,-4	// upper = upper -1
+	nop
+	addi t2,t2,-1
+	nop
+	lw t7,0(s4)
+	nop
+	lw t4,0(t9)
+	nop
+	
+	
+	LP4:
+	ble t9,s4,LP1
+	nop
+	
+	
+	move t8,t7				//t8 är temp
+	nop
+	
+	move t7,t3
+	nop
+	sw t7,0(s4)
+	nop
+	
+	move t3,t8
+	nop
+	sw t3,0(t1)	
+	nop
+	
+	move v0,t2 //returvärde k
+	
+	lw ra, 20(sp)
+	nop
+	addiu sp,sp,24
+	nop
+	jr ra
+	nop
+	.end partition
+	
+
+
+
+.globl start
+.ent start
+
+start:
+
+	subu sp,sp,24
+	nop
+	sw ra,20(sp)
+	nop
+	la a1,array
+	nop
+/*	lw a2,antal //upper (kallas b här)
+	nop
+	addiu a2, a2,-1
+	nop 
+	li a0,0  // a
+	nop*/
+	
+	jal skriv		//kör subrutinen skriv
+	nop
+	
+	la a1,array //argument till quicksort (v,a,b)
+	nop
+	li a0,0
+	lw a2,antal
+	nop
+	addi a2,a2,-1
+		
+	jal quicksort
+	nop
+	la a1,array
+	jal skriv
+	nop
+	
+	
+	lw ra,20(sp) //laddar in returadressen
+	nop
+	addiu sp,sp,24 //flyttar stackpekaren
+	nop
+	jr ra
+	nop
+	.end start
